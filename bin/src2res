@@ -1,0 +1,23 @@
+#!/usr/local/bin/node
+
+const fs = require('fs')
+
+const maxValue = arr => arr.reduce((a, b) => Math.max(a, b))
+
+const res = {}
+
+for (let src of fs.readdirSync('../src/')) {
+  data = fs.readFileSync(`../src/${src}`, 'utf-8').split('_')
+
+  res[src.match(/^NM_\d+/)[0]] = {
+    data: data,
+    plot: {
+      max_x: data.length,
+      max_y: maxValue(data)
+    }
+  }
+}
+
+fs.writeFileSync('../app/res.json', JSON.stringify(res, null, 2))
+
+// vi:et:ft=javascript
