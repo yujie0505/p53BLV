@@ -2,7 +2,13 @@
 
 const fs = require('fs')
 
+// utility
+
+const buildPlotX = max_x => Array.from(new Array(max_x), (val, index) => index + 1)
+
 const maxValue = arr => arr.reduce((a, b) => Math.max(a, b))
+
+//////////////////////////////////////////////////////////////
 
 const res = {}
 
@@ -10,8 +16,11 @@ for (let src of fs.readdirSync('../src/')) {
   data = fs.readFileSync(`../src/${src}`, 'utf-8').split('_')
 
   res[src.match(/^NM_\d+/)[0]] = {
-    data: data,
     plot: {
+      x: buildPlotX(data.length),
+      y: data
+    },
+    stats: {
       max_x: data.length,
       max_y: maxValue(data)
     }
