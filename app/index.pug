@@ -4,5 +4,13 @@ html
     title Programming for Computational Systems Biology
 
   body
+    ul#setting
+      script(type='x-tmpl-mustache')
+        | {{#id}}
+        li
+          h4 {{.}}
+          input.tgl(id='{{.}}' type='checkbox')
+          label.tgl-btn(data-tg-off='OFF' data-tg-on='ON' for='{{.}}')
+        | {{/id}}
 
     script(src='./app.js')
