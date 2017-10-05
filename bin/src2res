@@ -10,16 +10,20 @@ const maxValue = arr => arr.reduce((a, b) => Math.max(a, b))
 
 //////////////////////////////////////////////////////////////
 
+const sequence_info = JSON.parse(fs.readFileSync('../src/seq-info.json', 'utf-8'))
+
 const res = {}
 
-for (let src of fs.readdirSync('../src/')) {
-  data = fs.readFileSync(`../src/${src}`, 'utf-8').split('_')
+for (let src of fs.readdirSync('../src/NM/')) {
+  let data = fs.readFileSync(`../src/NM/${src}`, 'utf-8').split('_')
+  let id = src.match(/^NM_\d+/)[0]
 
-  res[src.match(/^NM_\d+/)[0]] = {
+  res[id] = {
     plot: {
       x: buildPlotX(data.length),
       y: data
     },
+    sequence_info: sequence_info[id],
     stats: {
       max_x: data.length,
       max_y: maxValue(data)

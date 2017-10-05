@@ -4816,6 +4816,13 @@
         "0"
       ]
     },
+    "sequence_info": {
+      "gene_name": "ABCB7",
+      "coding_region": {
+        "end": 2207,
+        "start": 69
+      }
+    },
     "stats": {
       "max_x": 2405,
       "max_y": 0.689351051332
@@ -9643,6 +9650,13 @@
         "0",
         "0"
       ]
+    },
+    "sequence_info": {
+      "gene_name": "ABCB7",
+      "coding_region": {
+        "end": 2210,
+        "start": 69
+      }
     },
     "stats": {
       "max_x": 2408,
@@ -16642,6 +16656,13 @@
         "0"
       ]
     },
+    "sequence_info": {
+      "gene_name": "AASDH",
+      "coding_region": {
+        "end": 3365,
+        "start": 528
+      }
+    },
     "stats": {
       "max_x": 3493,
       "max_y": 0.269545651641
@@ -22687,6 +22708,13 @@
         "0",
         "0"
       ]
+    },
+    "sequence_info": {
+      "gene_name": "AASDH",
+      "coding_region": {
+        "end": 2889,
+        "start": 1048
+      }
     },
     "stats": {
       "max_x": 3017,
@@ -29089,6 +29117,13 @@
         "0",
         "0"
       ]
+    },
+    "sequence_info": {
+      "gene_name": "AASDH",
+      "coding_region": {
+        "end": 2763,
+        "start": "190"
+      }
     },
     "stats": {
       "max_x": 3195,
