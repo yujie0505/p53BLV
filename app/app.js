@@ -30,20 +30,39 @@ const plotResult = () => {
 
   document.querySelector('#results').innerHTML = Mustache.render(app.result_tmpl, { tid: tids })
 
+  let max_x = 0, max_y = 0
+
   for (let tid of tids) {
-    Plotly.newPlot(
-      `plot_${tid}`,
-      [{
-        fill: 'tozeroy',
-        mode: 'none',
-        type: 'scatter',
-        x: res[tid].plot.x,
-        y: res[tid].plot.y
-      }],
-      {
-        title: `[${res[tid].sequence_info.gene_name}] (${tid})`
+    max_x = Math.max(res[tid].stats.max_x, max_x)
+    max_y = Math.max(res[tid].stats.max_y, max_y)
+  }
+
+  for (let tid of tids) {
+    let trace_NM = {
+      fill: 'tozeroy',
+      fillcolor: '#86d993',
+      mode: 'none',
+      type: 'scatter',
+      x: res[tid].plot.x,
+      y: res[tid].plot.y
+    }
+
+    let layout = {
+      height: 120,
+      margin: {
+        b: 30,
+        t: 30
+      },
+      title: `[${res[tid].sequence_info.gene_name}] (${tid})`,
+      xaxis: {
+        range: [1, max_x]
+      },
+      yaxis: {
+        range: [0, max_y]
       }
-    )
+    }
+
+    Plotly.newPlot(`plot_${tid}`, [trace_NM], layout)
   }
 }
 
