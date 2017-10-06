@@ -16,14 +16,14 @@ const res = {}
 
 for (let src of fs.readdirSync('../src/NM/')) {
   let data = fs.readFileSync(`../src/NM/${src}`, 'utf-8').split('_')
-  let id = src.match(/^NM_\d+/)[0]
+  let tid = src.match(/^NM_\d+/)[0]
 
-  res[id] = {
+  res[tid] = {
     plot: {
       x: buildPlotX(data.length),
       y: data
     },
-    sequence_info: sequence_info[id],
+    sequence_info: sequence_info[tid],
     stats: {
       max_x: data.length,
       max_y: maxValue(data)
