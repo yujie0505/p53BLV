@@ -17,6 +17,8 @@ import res from './res.json'
 
 ///////////////////////////////////////////////////////
 
+// global variables
+
 const app = {
   result_tmpl: document.querySelector('#results script').innerHTML,
   show_tids: {}
@@ -37,6 +39,14 @@ const plotResult = () => {
     max_y = Math.max(res[tid].stats.max_y, max_y)
   }
 
+  let trace_sequence = {
+    hoverinfo: 'none',
+    orientation: 'h',
+    type: 'bar',
+    xaxis: 'x2',
+    yaxis: 'y2'
+  }
+
   for (let tid of tids) {
     let trace_NM = {
       fill: 'tozeroy',
@@ -48,58 +58,26 @@ const plotResult = () => {
       y: res[tid].plot.y
     }
 
-    let trace_5_prime_UTR = {
-      hoverinfo: 'none',
-      marker: {
-        color: 'red',
-        width: 1
-      },
+    let trace_5_prime_UTR = Object.assign({
+      marker: { color: 'red', width: 1 },
       name: "5'UTR",
-      orientation: 'h',
-      outsidetextfont: {
-        size: 10
-      },
-      text: res[tid].sequence_info.coding_region.start,
-      textposition: 'outside',
-      type: 'bar',
       x: [res[tid].sequence_info.coding_region.start],
-      xaxis: 'x2',
-      y: ['sequence'],
-      yaxis: 'y2'
-    }
+      y: ['sequence']
+    }, trace_sequence)
 
-    let trace_coding_region = {
-      hoverinfo: 'none',
-
-      marker: {
-        color: 'blue',
-        width: 1
-      },
+    let trace_coding_region = Object.assign({
+      marker: { color: 'blue', width: 1 },
       name: "CDS",
-      orientation: 'h',
-      type: 'bar',
       x: [res[tid].sequence_info.coding_region.end - res[tid].sequence_info.coding_region.start],
-      xaxis: 'x2',
-      y: ['sequence'],
-      yaxis: 'y2'
-    }
+      y: ['sequence']
+    }, trace_sequence)
 
-    let trace_3_prime_UTR = {
-
-      hoverinfo: 'none',
-
-      marker: {
-        color: 'yellow',
-        width: 1
-      },
+    let trace_3_prime_UTR = Object.assign({
+      marker: { color: 'yellow', width: 1 },
       name: "3'UTR",
-      orientation: 'h',
-      type: 'bar',
       x: [res[tid].stats.max_x - res[tid].sequence_info.coding_region.end],
-      xaxis: 'x2',
-      y: ['sequence'],
-      yaxis: 'y2'
-    }
+      y: ['sequence']
+    }, trace_sequence)
 
     let layout = {
       barmode: 'stack',
@@ -130,12 +108,11 @@ const plotResult = () => {
   }
 }
 
+///////////////////////////////////////////////////////
+
 // control panel
 
-document.querySelector('#setting').innerHTML = Mustache.render(
-  document.querySelector('#setting script').innerHTML,
-  { tid: Object.keys(res) }
-)
+document.querySelector('#setting').innerHTML = Mustache.render(document.querySelector('#setting script').innerHTML, { tid: Object.keys(res) })
 
 Array.from(document.querySelectorAll('#setting label'), dom => dom.onclick = () => {
   if (app.show_tids[dom.dataset.tid])
