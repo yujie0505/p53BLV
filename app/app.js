@@ -24,7 +24,7 @@ const app = {
 Mustache.parse(app.result_tmpl)
 
 const plotResult = () => {
-  let tids = Object.keys(app.show_tids).filter(tid => app.show_tids[tid])
+  let tids = Object.keys(app.show_tids)
 
   // plot results
 
@@ -42,13 +42,68 @@ const plotResult = () => {
       fill: 'tozeroy',
       fillcolor: '#86d993',
       mode: 'none',
+      name: 'NM',
       type: 'scatter',
       x: res[tid].plot.x,
       y: res[tid].plot.y
     }
 
+    let trace_5_prime_UTR = {
+      hoverinfo: 'none',
+      marker: {
+        color: 'red',
+        width: 1
+      },
+      name: "5'UTR",
+      orientation: 'h',
+      outsidetextfont: {
+        size: 10
+      },
+      text: res[tid].sequence_info.coding_region.start,
+      textposition: 'outside',
+      type: 'bar',
+      x: [res[tid].sequence_info.coding_region.start],
+      xaxis: 'x2',
+      y: ['sequence'],
+      yaxis: 'y2'
+    }
+
+    let trace_coding_region = {
+      hoverinfo: 'none',
+
+      marker: {
+        color: 'blue',
+        width: 1
+      },
+      name: "CDS",
+      orientation: 'h',
+      type: 'bar',
+      x: [res[tid].sequence_info.coding_region.end - res[tid].sequence_info.coding_region.start],
+      xaxis: 'x2',
+      y: ['sequence'],
+      yaxis: 'y2'
+    }
+
+    let trace_3_prime_UTR = {
+
+      hoverinfo: 'none',
+
+      marker: {
+        color: 'yellow',
+        width: 1
+      },
+      name: "3'UTR",
+      orientation: 'h',
+      type: 'bar',
+      x: [res[tid].stats.max_x - res[tid].sequence_info.coding_region.end],
+      xaxis: 'x2',
+      y: ['sequence'],
+      yaxis: 'y2'
+    }
+
     let layout = {
-      height: 120,
+      barmode: 'stack',
+      height: 180,
       margin: {
         b: 30,
         t: 30
@@ -57,12 +112,21 @@ const plotResult = () => {
       xaxis: {
         range: [1, max_x]
       },
+      xaxis2: {
+        anchor: 'y2',
+        range: [1, max_x],
+        scaleanchor: 'x'
+      },
       yaxis: {
+        domain: [0.3, 1],
         range: [0, max_y]
+      },
+      yaxis2: {
+        domain: [0, 0.1]
       }
     }
 
-    Plotly.newPlot(`plot_${tid}`, [trace_NM], layout)
+    Plotly.newPlot(`plot_${tid}`, [trace_NM, trace_5_prime_UTR, trace_coding_region, trace_3_prime_UTR], layout)
   }
 }
 
@@ -74,7 +138,10 @@ document.querySelector('#setting').innerHTML = Mustache.render(
 )
 
 Array.from(document.querySelectorAll('#setting label'), dom => dom.onclick = () => {
-  app.show_tids[dom.dataset.tid] = app.show_tids[dom.dataset.tid] ? app.show_tids[dom.dataset.tid] ^ 1 : 1
+  if (app.show_tids[dom.dataset.tid])
+    delete app.show_tids[dom.dataset.tid]
+  else
+    app.show_tids[dom.dataset.tid] = true
 
   plotResult()
 })
