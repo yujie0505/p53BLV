@@ -91,21 +91,35 @@ const plotResult = () => {
       xaxis2: {
         anchor: 'y2',
         range: [1, max_x],
-        ticks: 'outside',
         tickmode: 'array',
+        ticks: 'outside',
         tickvals: [res[tid].sequence_info.coding_region.start, res[tid].sequence_info.coding_region.end, res[tid].stats.max_x]
       },
       yaxis: {
         domain: [0.3, 1],
-        range: [0, max_y]
+        range: [0, max_y],
+        fixedrange: true
       },
       yaxis2: {
         domain: [0, 0.1],
+        fixedrange: true,
         visible: false
       }
     }
 
     Plotly.newPlot(`plot_${tid}`, [trace_NM, trace_5_prime_UTR, trace_coding_region, trace_3_prime_UTR], layout)
+
+    document.getElementById(`plot_${tid}`).on('plotly_relayout', zoom_data =>
+      Plotly.update(`plot_${tid}`, {}, {
+        xaxis2: {
+          anchor: 'y2',
+          range: [zoom_data['xaxis.range[0]'], zoom_data['xaxis.range[1]']],
+          tickmode: 'array',
+          ticks: 'outside',
+          tickvals: [res[tid].sequence_info.coding_region.start, res[tid].sequence_info.coding_region.end, res[tid].stats.max_x]
+        }
+      })
+    )
   }
 }
 
