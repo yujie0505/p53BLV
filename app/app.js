@@ -41,6 +41,7 @@ const plotResult = () => {
 
   let trace_sequence = {
     hoverinfo: 'none',
+    legendgroup: 'sequence_info',
     orientation: 'h',
     type: 'bar',
     xaxis: 'x2',
@@ -61,22 +62,19 @@ const plotResult = () => {
     let trace_5_prime_UTR = Object.assign({
       marker: { color: 'red', width: 1 },
       name: "5'UTR",
-      x: [res[tid].sequence_info.coding_region.start],
-      y: ['sequence']
+      x: [res[tid].sequence_info.coding_region.start]
     }, trace_sequence)
 
     let trace_coding_region = Object.assign({
       marker: { color: 'blue', width: 1 },
       name: "CDS",
-      x: [res[tid].sequence_info.coding_region.end - res[tid].sequence_info.coding_region.start],
-      y: ['sequence']
+      x: [res[tid].sequence_info.coding_region.end - res[tid].sequence_info.coding_region.start]
     }, trace_sequence)
 
     let trace_3_prime_UTR = Object.assign({
       marker: { color: 'yellow', width: 1 },
       name: "3'UTR",
-      x: [res[tid].stats.max_x - res[tid].sequence_info.coding_region.end],
-      y: ['sequence']
+      x: [res[tid].stats.max_x - res[tid].sequence_info.coding_region.end]
     }, trace_sequence)
 
     let layout = {
@@ -86,21 +84,24 @@ const plotResult = () => {
         b: 30,
         t: 30
       },
-      title: `[${res[tid].sequence_info.gene_name}] (${tid})`,
+      title: `[${res[tid].sequence_info.gene_name}] ${tid}`,
       xaxis: {
         range: [1, max_x]
       },
       xaxis2: {
         anchor: 'y2',
         range: [1, max_x],
-        scaleanchor: 'x'
+        ticks: 'outside',
+        tickmode: 'array',
+        tickvals: [res[tid].sequence_info.coding_region.start, res[tid].sequence_info.coding_region.end, res[tid].stats.max_x]
       },
       yaxis: {
         domain: [0.3, 1],
         range: [0, max_y]
       },
       yaxis2: {
-        domain: [0, 0.1]
+        domain: [0, 0.1],
+        visible: false
       }
     }
 
