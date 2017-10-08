@@ -51,7 +51,7 @@ const plotResult = () => {
   for (let tid of tids) {
     let trace_NM = {
       fill: 'tozeroy',
-      fillcolor: '#86d993',
+      fillcolor: '#11CD86',
       mode: 'none',
       name: 'NM',
       type: 'scatter',
@@ -60,19 +60,19 @@ const plotResult = () => {
     }
 
     let trace_5_prime_UTR = Object.assign({
-      marker: { color: 'red', width: 1 },
+      marker: { color: '#F70044', width: 1 },
       name: "5'UTR",
       x: [res[tid].sequence_info.coding_region.start]
     }, trace_sequence)
 
     let trace_coding_region = Object.assign({
-      marker: { color: 'blue', width: 1 },
+      marker: { color: '#066FA5', width: 1 },
       name: "CDS",
       x: [res[tid].sequence_info.coding_region.end - res[tid].sequence_info.coding_region.start]
     }, trace_sequence)
 
     let trace_3_prime_UTR = Object.assign({
-      marker: { color: 'yellow', width: 1 },
+      marker: { color: '#F6D600', width: 1 },
       name: "3'UTR",
       x: [res[tid].stats.max_x - res[tid].sequence_info.coding_region.end]
     }, trace_sequence)
@@ -86,17 +86,18 @@ const plotResult = () => {
       },
       title: `[${res[tid].sequence_info.gene_name}] ${tid}`,
       xaxis: {
-        range: [1, max_x]
+        range: [1, max_x],
+        visible: false
       },
       xaxis2: {
         anchor: 'y2',
         range: [1, max_x],
         tickmode: 'array',
         ticks: 'outside',
-        tickvals: [res[tid].sequence_info.coding_region.start, res[tid].sequence_info.coding_region.end, res[tid].stats.max_x]
+        tickvals: [1, res[tid].sequence_info.coding_region.start, res[tid].sequence_info.coding_region.end, res[tid].stats.max_x]
       },
       yaxis: {
-        domain: [0.3, 1],
+        domain: [0.15, 1],
         range: [0, max_y],
         fixedrange: true
       },
