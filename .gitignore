@@ -1,5 +1,8 @@
+**/.ropeproject/
 dist/
 node_modules/
 npm-debug.log
 option.json
+res/
 src/
+tools/
