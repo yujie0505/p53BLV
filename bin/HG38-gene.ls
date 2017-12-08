@@ -4,6 +4,7 @@ list-raw = fs.read-file-sync \../src/biomart_export_hg38genelist.txt \utf-8
 list-uni = {}
 
 chr-whitelist = "^(#{<[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 X Y MT]> * \|})$"
+promoter-offset = 10000
 
 for record in (list-raw / \\n).slice 1 -1
   data = record / \,
@@ -20,6 +21,7 @@ for record in (list-raw / \\n).slice 1 -1
     HGNC-symbol              : data[8]
     gene-name                : data[9]
     transcript-name          : data[10]
+  gene.promoter = start: gene.transcription-start-site - promoter-offset, end: gene.transcription-start-site + promoter-offset
   gene.transcript-length = gene.transcript-end - gene.transcript-start
 
   continue if not gene.NCBI-gene-id.length or not gene.HGNC-symbol.length or not gene.chromosome-name.match chr-whitelist
