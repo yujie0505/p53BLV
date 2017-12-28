@@ -2,16 +2,10 @@ import autoprefixer from 'autoprefixer'
 import { resolve } from 'path'
 import webpack from 'webpack'
 
-import { server } from './option.json'
+import { server } from '../option.json'
 
-const config = {
-  context: resolve('app'),
-  devServer: {
-    host: server.host,
-    inline: true,
-    port: server.port,
-    stats: { chunkModules: false, colors: true },
-  },
+export default {
+  context: resolve('./app'),
   entry: './app.js',
   module: {
     rules: [
@@ -25,18 +19,7 @@ const config = {
   },
   output: {
     filename: 'app.js',
-    path: resolve('dist')
+    path: resolve('./dist'),
+    publicPath: `http://${server.host}:${server.port}/`
   }
 }
-
-if('development' === process.env.NODE_ENV)
-  config.plugins = [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ]
-else
-  config.plugins = [
-    new webpack.optimize.ModuleConcatenationPlugin()
-  ]
-
-export default config
