@@ -1,22 +1,23 @@
 {
+  "admin": false,
+  "autoInstall": true,
   "base": "node_modules/semantic-ui/",
   "paths": {
-    "source": {
-      "config": "src/theme.config",
-      "definitions": "src/definitions/",
-      "site": "src/site/",
-      "themes": "src/themes/"
-    },
+    "clean": "dist/",
     "output": {
-      "packaged": "dist/",
-      "uncompressed": "dist/components/",
-      "compressed": "dist/components/",
-      "themes": "dist/themes/"
+      "compressed"   : "dist/components/",
+      "packaged"     : "dist/",
+      "themes"       : "dist/themes/",
+      "uncompressed" : "dist/components/"
     },
-    "clean": "dist/"
+    "source": {
+      "config"      : "src/theme.config",
+      "definitions" : "src/definitions/",
+      "site"        : "src/site/",
+      "themes"      : "src/themes/"
+    }
   },
   "permission": false,
-  "autoInstall": true,
   "rtl": false,
   "version": "2.2.13"
 }
