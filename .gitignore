@@ -1,8 +1,9 @@
 **/.ropeproject/
+ChIP-Seq
 dist/
 node_modules/
 npm-debug.log
 option.json
-res/
+ref/
 src/
 tools/
