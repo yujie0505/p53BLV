@@ -3,7 +3,7 @@
 // web framework
 
 import 'imports-loader?define=>false,exports=>false,this=>window!mustache/mustache'
-import 'semantic-ui/dist/semantic.min.css'
+import 'semantic-ui-offline/semantic.min.css'
 
 const socket = io()
 
