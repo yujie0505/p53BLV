@@ -25,15 +25,36 @@ if ('development' === process.env.NODE_ENV)
 // global setting
 
 const app = {
+  scroll_top: { home: 0, search: document.querySelector('#home').clientHeight },
   search_tmpl: document.querySelector('#search script').innerHTML
 }
 Mustache.parse(app.search_tmpl)
 
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
 
+if (window.location.hash) {
+  let item = document.querySelector(`#home .menu .item.navigator[data-hash='${window.location.hash.substring(1)}']`)
+
+  if (item) {
+    document.querySelector('#home .menu .item.navigator.active').classList.remove('active')
+    item.classList.add('active')
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 // DOM event
+
+/************************************** NAVIGATOR **************************************/
+
+Array.from(document.querySelectorAll('.navigator'), dom => dom.onclick = function () {
+  document.querySelector('#home .menu .item.navigator.active').classList.remove('active')
+  document.querySelector(`#home .menu .item.navigator[data-hash='${this.dataset.hash}']`).classList.add('active')
+
+  window.scroll({ behavior: 'smooth', top: app.scroll_top[this.dataset.hash] })
+})
+
+/************************************** SEARCH **************************************/
 
 Array.from(document.querySelectorAll('#search .ui.checkbox input'), dom => dom.onclick = function () {
   this.parentNode.parentNode.parentNode.querySelector('.list').classList.toggle('disabled')
