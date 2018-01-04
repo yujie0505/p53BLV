@@ -22,10 +22,12 @@ html
         .row
           .left.aligned.column
             a.ui.huge.header(href='#search') # Search
-            table.ui.selectable.celled.table
+            table.ui.definition.selectable.celled.table
               thead
                 tr
+                  th
                   th Dataset
+                  th Gene List
                   th Cell Line
                   th TP53
                   th Treatment
@@ -35,7 +37,18 @@ html
                 script(type='x-tmpl-mustache')
                   | {{#db}}
                   tr
+                    td.collapsing
+                      .ui.fitted.slider.checkbox #[input(type='checkbox')] #[label]
                     td {{dataset}}
+                    td.list.disabled
+                      .ui.dropdown
+                        .text(data-list-chosen='HOMER') #[i.dropdown.icon]
+                        .menu.transition.slide.down.in
+                          .item(data-list='HOMER') HOMER
+                          .item(data-list='CLC') CLC
+                          .divider
+                          .item(data-list='INTERSECTION') INTERSECTION
+                          .item(data-list='UNION') UNION
                     td {{cellLine}}
                     td {{tp53}}
                     td {{treatment}}

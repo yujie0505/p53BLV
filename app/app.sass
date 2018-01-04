@@ -17,3 +17,15 @@
   .header
     color: gray
     font-style: italic
+
+  .menu.transition
+    animation-duration: .17s
+
+  .text
+
+    &::before
+      content: attr(data-list-chosen)
+
+    i
+      margin-left: 1em
+      margin-right: 0

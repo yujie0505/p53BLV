@@ -22,9 +22,41 @@ if ('development' === process.env.NODE_ENV)
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+// global setting
+
 const app = {
   search_tmpl: document.querySelector('#search script').innerHTML
 }
 Mustache.parse(app.search_tmpl)
 
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+// DOM event
+
+Array.from(document.querySelectorAll('#search .ui.checkbox input'), dom => dom.onclick = function () {
+  this.parentNode.parentNode.parentNode.querySelector('.list').classList.toggle('disabled')
+})
+
+Array.from(document.querySelectorAll('#search .ui.dropdown'), dom => dom.onclick = function () {
+  event.stopPropagation()
+
+  let body = document.querySelector('body'),
+      last = document.querySelector('#search .ui.dropdown .menu.visible'),
+      menu = this.querySelector('.menu')
+
+  menu.classList.toggle('visible')
+
+  if (last) last.classList.remove('visible')
+
+  body.onclick = () => {
+    menu.classList.remove('visible')
+
+    body.onclick = null
+  }
+})
+
+Array.from(document.querySelectorAll('#search .ui.dropdown .menu .item'), dom => dom.onclick = function () {
+  this.parentNode.previousSibling.setAttribute('data-list-chosen', this.dataset.list)
+})
