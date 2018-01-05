@@ -32,15 +32,6 @@ Mustache.parse(app.search_tmpl)
 
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
 
-if (window.location.hash) {
-  let item = document.querySelector(`#home .menu .item.navigator[data-hash='${window.location.hash.substring(1)}']`)
-
-  if (item) {
-    document.querySelector('#home .menu .item.navigator.active').classList.remove('active')
-    item.classList.add('active')
-  }
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////
 
 // DOM event
@@ -48,9 +39,6 @@ if (window.location.hash) {
 /************************************** NAVIGATOR **************************************/
 
 Array.from(document.querySelectorAll('.navigator'), dom => dom.onclick = function () {
-  document.querySelector('#home .menu .item.navigator.active').classList.remove('active')
-  document.querySelector(`#home .menu .item.navigator[data-hash='${this.dataset.hash}']`).classList.add('active')
-
   window.scroll({ behavior: 'smooth', top: app.scroll_top[this.dataset.hash] })
 })
 
