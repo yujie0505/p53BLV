@@ -9,14 +9,36 @@ html
       .ui.container
         .ui.large.secondary.inverted.pointing.menu
           a.navigator.active.item(data-hash='home') Home
+          a.navigator.item(data-hash='browse') Browse
           a.navigator.item(data-hash='search') Search
 
       .ui.text.container
         h1.ui.inverted.header p53BLV
         h2 Whole-Genome Binding Locations Viewer of Human p53
-        .ui.huge.primary.button.navigator(data-hash='search') Get Started #[i.right.arrow.icon]
+        .ui.huge.primary.button.navigator(data-hash='browse') Get Started #[i.right.arrow.icon]
 
-    #search.ui.vertical.stripe.segment
+    #browse.ui.vertical.segment
+      .ui.equal.width.center.aligned.grid
+        .row
+          .grey.column(data-browse='customized')
+            h2 Customized Browsing
+            .ui.left.action.input
+              button.ui.pink.labeled.icon.button #[i.map.pin.icon] Browsing Target
+              input(placeholder='chr12:68808176 or MDM2' type='text')
+            .ui.left.action.input
+              button.ui.pink.labeled.icon.button #[i.world.icon] Browsing Range
+              input(min='1' placeholder='10000' type='number')
+
+          .grey.column.chosen(data-browse='global')
+            h2 Global Browsing
+            .ui.left.action.input
+              button.ui.pink.labeled.icon.button #[i.map.pin.icon] Browsing Target
+              input(disabled type='text' value='Whole Genome')
+            .ui.left.action.input
+              button.ui.pink.labeled.icon.button #[i.world.icon] Browsing Range
+              input(disabled type='number' value='10000')
+
+    #search.ui.vertical.segment
       .ui.middle.aligned.stackable.grid.container
         .row
           .left.aligned.column
@@ -26,7 +48,15 @@ html
                 tr
                   th
                   th Dataset
-                  th Gene List
+                  th
+                    .ui.dropdown
+                      .text Gene List #[i.dropdown.icon]
+                      .menu.transition.slide.down.in(data-list-chosen='HOMER')
+                        .item(data-list='HOMER') HOMER
+                        .item(data-list='CLC') CLC
+                        .divider
+                        .item(data-list='INTERSECTION') INTERSECTION
+                        .item(data-list='UNION') UNION
                   th Cell Line
                   th TP53
                   th Treatment
@@ -39,15 +69,7 @@ html
                     td.collapsing
                       .ui.fitted.slider.checkbox #[input(type='checkbox')] #[label]
                     td {{dataset}}
-                    td.list.disabled
-                      .ui.dropdown
-                        .text(data-list-chosen='HOMER') #[i.dropdown.icon]
-                        .menu.transition.slide.down.in
-                          .item(data-list='HOMER') HOMER
-                          .item(data-list='CLC') CLC
-                          .divider
-                          .item(data-list='INTERSECTION') INTERSECTION
-                          .item(data-list='UNION') UNION
+                    td.list.disabled HOMER
                     td {{cellLine}}
                     td {{tp53}}
                     td {{treatment}}

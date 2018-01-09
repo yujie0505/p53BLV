@@ -25,9 +25,10 @@ if ('development' === process.env.NODE_ENV)
 // global setting
 
 const app = {
-  scroll_top: { home: 0, search: document.querySelector('#home').clientHeight },
+  scroll_top: { browse: document.querySelector('#home').clientHeight, home: 0 },
   search_tmpl: document.querySelector('#search script').innerHTML
 }
+app.scroll_top.search = app.scroll_top.browse + document.querySelector('#browse').clientHeight
 Mustache.parse(app.search_tmpl)
 
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
@@ -42,30 +43,39 @@ Array.from(document.querySelectorAll('.navigator'), dom => dom.onclick = functio
   window.scroll({ behavior: 'smooth', top: app.scroll_top[this.dataset.hash] })
 })
 
-/************************************** SEARCH **************************************/
+/************************************** BROWSE **************************************/
 
-Array.from(document.querySelectorAll('#search .ui.checkbox input'), dom => dom.onclick = function () {
-  this.parentNode.parentNode.parentNode.querySelector('.list').classList.toggle('disabled')
+Array.from(document.querySelectorAll('#browse .column[data-browse]'), dom => dom.onclick = function () {
+  document.querySelector('#browse .column[data-browse].chosen').classList.remove('chosen')
+
+  this.classList.add('chosen')
 })
 
-Array.from(document.querySelectorAll('#search .ui.dropdown'), dom => dom.onclick = function () {
+/************************************** SEARCH **************************************/
+
+document.querySelector('#search thead .dropdown').onclick = function () {
   event.stopPropagation()
 
   let body = document.querySelector('body'),
-      last = document.querySelector('#search .ui.dropdown .menu.visible'),
       menu = this.querySelector('.menu')
 
   menu.classList.toggle('visible')
-
-  if (last) last.classList.remove('visible')
 
   body.onclick = () => {
     menu.classList.remove('visible')
 
     body.onclick = null
   }
+}
+
+Array.from(document.querySelectorAll('#search thead .dropdown .menu .item'), dom => dom.onclick = function () {
+  let list = this.dataset.list
+
+  this.parentNode.setAttribute('data-list-chosen', list)
+
+  Array.from(document.querySelectorAll('#search tbody td.list'), dom => dom.textContent = list)
 })
 
-Array.from(document.querySelectorAll('#search .ui.dropdown .menu .item'), dom => dom.onclick = function () {
-  this.parentNode.previousSibling.setAttribute('data-list-chosen', this.dataset.list)
+Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => dom.onclick = function () {
+  this.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
 })

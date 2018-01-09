@@ -1,3 +1,10 @@
+/********************** global setting **********************/
+
+$grey: #A0A0A0
+$teal: #00b5ad
+
+/************************************************************/
+
 #home
   min-height: 680px
   padding: 1em 0
@@ -11,24 +18,38 @@
     font-size: 1.7em
     font-weight: normal
 
+#browse
+
+  .column[data-browse]
+    cursor: pointer
+    opacity: .45
+    padding: 6em 3em
+
+    &.chosen
+      background-color: $teal!important
+      opacity: 1
+
+      .input
+        pointer-events: auto
+
+    .input
+      margin-top: 1em
+      pointer-events: none
+      width: 80%
+
 #search
-  padding: 8em 0
+  padding: 3em 0
 
   .header
-    color: gray
+    color: $grey
     font-style: italic
 
   .menu.transition
     animation-duration: .17s
 
-  .text
-
-    &::before
-      content: attr(data-list-chosen)
-
-    i
-      margin-left: 1em
-      margin-right: 0
+  .text i
+    margin-left: 1em
+    margin-right: 0
 
 .navigator
   cursor: pointer
