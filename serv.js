@@ -1,6 +1,7 @@
+import gene from './ref/gene.json'
+
 module.exports = io => {
   io.on('connect', client => {
-    client.emit('news', 'yujie')
-
+    client.on('get-gene', cb => cb(gene))
   })
 }

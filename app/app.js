@@ -31,6 +31,8 @@ const app = {
 app.scroll_top.search = app.scroll_top.browse + document.querySelector('#browse').clientHeight
 Mustache.parse(app.search_tmpl)
 
+socket.emit('get-gene', gene => app.gene = gene)
+
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
 
 ///////////////////////////////////////////////////////////////////////////////////////
