@@ -36,7 +36,7 @@ html
               input(disabled type='text' value='Whole Genome')
             .ui.left.action.input
               button.ui.pink.labeled.icon.button #[i.world.icon] Browsing Range
-              input(disabled type='number' value='10000')
+              input(disabled type='number' value='15000')
 
     #search.ui.vertical.segment
       .ui.middle.aligned.stackable.grid.container
@@ -67,7 +67,7 @@ html
                   | {{#db}}
                   tr
                     td.collapsing
-                      .ui.fitted.slider.checkbox #[input(type='checkbox')] #[label]
+                      .ui.fitted.slider.checkbox #[input(data-dataset='{{dataset}}' type='checkbox')] #[label]
                     td {{dataset}}
                     td.list.disabled HOMER
                     td {{cellLine}}
@@ -76,5 +76,43 @@ html
                     td #[a(href='{{reference.href}}') {{reference.title}}]
                     td #[a(href='{{GEO.href}}') {{GEO.title}}]
                   | {{/db}}
+
+        .row
+          .center.aligned.column
+            button.ui.primary.button Search
+
+    #result.ui.vertical.segment.inverted.teal
+      .ui.middle.aligned.stackable.grid.container
+        .row
+          .left.aligned.column
+            span.ui.huge.header #[i.angle.double.right.icon] Search Result
+            table.ui.selectable.celled.structured.table
+              thead
+                script(type='x-tmpl-mustache')
+                  tr
+                    th(rowspan='2') Gene Symbol
+                    | {{#wildtype}}
+                    th(colspan='{{.}}') WT TP53
+                    | {{/wildtype}}
+                    | {{#mutant}}
+                    th(colspan='{{.}}') Mutant TP53
+                    | {{/mutant}}
+                    th(data-sort-by-occurrence rowspan='2').sortable Occurrence
+                    th(rowspan=2) Detail
+                  tr
+                    | {{#datasets}}
+                    th(data-dataset='{{.}}').sortable {{.}}
+                    | {{/datasets}}
+              tbody
+                script(type='x-tmpl-mustache')
+                  | {{#gene_list}}
+                  tr
+                    td #[a(href='{{reference}}' target='_blank') {{gene_name}}]
+                    | {{#datasets}}
+                    td {{{.}}}
+                    | {{/datasets}}
+                    td {{occurrence}}
+                    td Link
+                  | {{/gene_list}}
 
     script(src='./app.js')
