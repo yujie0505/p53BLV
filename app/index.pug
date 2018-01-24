@@ -114,5 +114,25 @@ html
                     td {{occurrence}}
                     td Link
                   | {{/gene_list}}
+              tfoot
+                script(type='x-tmpl-mustache')
+                  tr
+                    th(colspan='{{colspan}}')
+                      .ui.right.floated.pagination.menu
+                        a.icon.item(data-page-minus) #[i.left.chevron.icon]
+                        a.item(data-page='1') 1
+                        | {{#pre_escape}}
+                        a.item.disabled ...
+                        | {{/pre_escape}}
+                        | {{#pages}}
+                        a.item(data-page='{{.}}') {{.}}
+                        | {{/pages}}
+                        | {{#post_escape}}
+                        a.item.disabled ...
+                        | {{/post_escape}}
+                        | {{#last_page}}
+                        a.item(data-page='{{.}}') {{.}}
+                        | {{/last_page}}
+                        a.icon.item(data-page-plus) #[i.right.chevron.icon]
 
     script(src='./app.js')
