@@ -32,7 +32,6 @@ const app = {
   },
   result_table_status: {
     curr_page_number : 1,
-    inter_page_icons : 3,
     items_per_page   : 10
   },
   result_tbody_tmpl: document.querySelector('#result tbody script').innerHTML,
@@ -74,17 +73,8 @@ const renderTfoot = () => {
 
   const tfoot = {
     colspan   : 3 + table.datasets.length,
-    last_page : table.last_page,
-    pages     : []
-  }
-
-  for (let i = 1; i <= table.inter_page_icons; i++) {
-    let page_number = table.curr_page_number + i
-
-    if (page_number >= table.last_page)
-      break
-
-    tfoot.pages.push(page_number)
+    last_page : 1 === table.last_page ? false : table.last_page,
+    pages     : [table.curr_page_number - 1, table.curr_page_number, table.curr_page_number + 1].filter(it => 1 < it && it < table.last_page)
   }
 
   if (tfoot.pages.length) {
@@ -96,20 +86,19 @@ const renderTfoot = () => {
   }
 
   document.querySelector('#result tfoot').innerHTML = Mustache.render(app.result_tfoot_tmpl, tfoot)
+  document.querySelector(`#result tfoot a.item[data-page='${table.curr_page_number}']`).classList.add('active')
 
   Array.from(document.querySelectorAll('#result tfoot a.item[data-page]'), dom => dom.onclick = function () {
     app.result_table_status.curr_page_number = parseInt(this.dataset.page)
 
-    renderTbody()
-    renderTfoot()
+    renderTbody(); renderTfoot()
   })
 
   document.querySelector('#result tfoot a.item[data-page-minus]').onclick = () => {
     if (1 < app.result_table_status.curr_page_number) {
       app.result_table_status.curr_page_number--
 
-      renderTbody()
-      renderTfoot()
+      renderTbody(); renderTfoot()
     }
   }
 
@@ -117,8 +106,7 @@ const renderTfoot = () => {
     if (app.result_table_status.last_page > app.result_table_status.curr_page_number) {
       app.result_table_status.curr_page_number++
 
-      renderTbody()
-      renderTfoot()
+      renderTbody(); renderTfoot()
     }
   }
 }
@@ -194,12 +182,25 @@ document.querySelector('#search button').onclick = () => {
 
     /********** THEAD **********/
 
-    let thead = { datasets: app.result_table_status.datasets, mutant: 0, wildtype: 0 }
+    const thead = { datasets: app.result_table_status.datasets, mutant: 0, wildtype: 0 }
 
     for (let dataset of app.result_table_status.datasets)
       thead[app.wildtype_datasets.test(dataset) ? 'wildtype' : 'mutant']++
 
     document.querySelector('#result thead').innerHTML = Mustache.render(app.result_thead_tmpl, thead)
+
+    Array.from(document.querySelectorAll('#result th[data-dataset]'), dom => dom.onclick = function () {
+      let exile = [], owned = []
+
+      for (let gene of app.result_table_status.gene_list) {
+        if (gene[this.dataset.dataset]) owned.push(gene)
+        else                            exile.push(gene)
+      }
+
+      app.result_table_status.gene_list = owned.slice().concat(exile)
+
+      renderTbody()
+    })
 
     document.querySelector('#result th[data-sort-by-occurrence]').onclick = () => {
       app.result_table_status.gene_list.sort((a, b) => b.occurrence - a.occurrence)
@@ -218,19 +219,6 @@ document.querySelector('#search button').onclick = () => {
     }
 
     renderTbody()
-
-    Array.from(document.querySelectorAll('#result th[data-dataset]'), dom => dom.onclick = function () {
-      let exile = [], owned = []
-
-      for (let gene of app.result_table_status.gene_list) {
-        if (gene[this.dataset.dataset]) owned.push(gene)
-        else                            exile.push(gene)
-      }
-
-      app.result_table_status.gene_list = owned.slice().concat(exile)
-
-      renderTbody()
-    })
 
     /********** TFOOT **********/
 
