@@ -47,7 +47,7 @@ Mustache.parse(app.result_tfoot_tmpl)
 Mustache.parse(app.result_thead_tmpl)
 Mustache.parse(app.search_tmpl)
 
-document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: db })
+document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: Object.values(db) })
 
 const renderTbody = () => {
   let gene_list, table = app.result_table_status
