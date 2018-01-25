@@ -73,5 +73,26 @@ $teal: #00b5ad
   .sortable
     cursor: pointer
 
+#plot
+  display: none
+  padding: 3em 0
+
+  &[data-show=plot-peak] #plot-peak
+    display: block
+
+  &[data-show=plot-track] #plot-track
+    display: block
+
+  #plot-peak, #plot-track
+    display: none
+
+  .header
+    color: $grey
+    font-style: italic
+    font-weight: normal
+
+    i
+      margin: 0
+
 .navigator
   cursor: pointer

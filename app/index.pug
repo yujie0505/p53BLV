@@ -135,4 +135,12 @@ html
                         | {{/last_page}}
                         a.icon.item(data-page-plus) #[i.right.chevron.icon]
 
+    #plot.ui.vertical.segment(data-show='plot-track')
+      .ui.middle.aligned.stackable.grid.container
+        .row
+          .left.aligned.column
+            span.ui.huge.header #[i.angle.double.right.icon] Plot
+            #plot-peak
+            #plot-track
+
     script(src='./app.js')
