@@ -4,7 +4,7 @@ module.exports = io => {
   io.on('connect', client => {
     client.on('search', async (browse, collection, action, datasets, cb) => {
       if ('customized' === browse)
-        return cb()
+        return cb(null, [])
 
       let project = { _id: 0, gene_name: 1 }, query = []
 

@@ -26,6 +26,7 @@ if ('development' === process.env.NODE_ENV)
 // global setting
 
 const app = {
+  global_browsing_range: document.querySelector("#browse .column[data-browse='global'] input[type='number']").value,
   redirection_list: {
     FAM95C : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000283486;r=9:38540569-38577207',
     OR8S1  : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000284723;r=12:48525632-48528103'
@@ -161,9 +162,13 @@ Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => do
 document.querySelector('#search button').onclick = () => {
   let browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
       collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen,
+      custom_range = document.querySelector("#browse .column[data-browse='customized'] input[type='number']").value,
+      custom_target = document.querySelector("#browse .column[data-browse='customized'] input[type='text']").value,
       datasets_chosen = document.querySelectorAll('#search tbody .checkbox input:checked')
 
   if (!datasets_chosen.length) return
+
+  if ('customized' === browse && (!custom_range.length || !custom_target.length)) return
 
   const datasets = []
 
@@ -189,6 +194,28 @@ document.querySelector('#search button').onclick = () => {
 
     document.querySelector('#result thead').innerHTML = Mustache.render(app.result_thead_tmpl, thead)
 
+    if ('customized' === browse) {
+      document.querySelector('#result tbody').innerHTML = Mustache.render(app.result_tbody_tmpl, { gene_list: [{
+        custom_range  : custom_range,
+        datasets      : app.result_table_status.datasets.map(() => '<i class="large green checkmark icon"></i>'),
+        gene_name     : custom_target,
+        occurrence    : app.result_table_status.datasets.length
+      }] })
+      document.querySelector('#result tbody a').removeAttribute('href')
+
+      app.result_table_status.curr_page_number = 1
+      app.result_table_status.last_page = 1
+
+      renderTfoot()
+
+      document.querySelector('#result tfoot a.item[data-page]').onclick = null
+
+      document.querySelector('#result').style.display = 'block'
+      window.scroll({ behavior: 'smooth', top: app.scroll_top.search + document.querySelector('#search').clientHeight })
+
+      return
+    }
+
     Array.from(document.querySelectorAll('#result th[data-dataset]'), dom => dom.onclick = function () {
       let exile = [], owned = []
 
@@ -213,6 +240,7 @@ document.querySelector('#search button').onclick = () => {
     app.result_table_status.curr_page_number = 1
 
     for (let gene of app.result_table_status.gene_list) {
+      gene.custom_range = app.global_browsing_range
       gene.occurrence = 0
 
       app.result_table_status.datasets.forEach(dataset => { if (gene[dataset]) gene.occurrence++ })
