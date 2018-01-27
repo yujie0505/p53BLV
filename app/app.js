@@ -4,6 +4,11 @@
 
 import 'imports-loader?define=>false,exports=>false,this=>window!mustache/mustache'
 import 'semantic-ui-offline/semantic.min.css'
+import { max as d3Max } from 'd3-array'
+import { axisBottom as d3AxisBottom, axisLeft as d3AxisLeft } from 'd3-axis'
+import { scaleLinear as d3ScaleLinear } from 'd3-scale'
+import { select as d3Select } from 'd3-selection'
+import { line as d3Line } from 'd3-shape'
 
 const socket = io()
 
@@ -27,6 +32,11 @@ if ('development' === process.env.NODE_ENV)
 
 const app = {
   global_browsing_range: document.querySelector("#browse .column[data-browse='global'] input[type='number']").value,
+  plot_opt: {
+    height : 500,
+    margin : { top: 40, right: 40, bottom: 40, left: 40 },
+    width  : document.querySelector('.container').clientWidth
+  },
   redirection_list: {
     FAM95C : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000283486;r=9:38540569-38577207',
     OR8S1  : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000284723;r=12:48525632-48528103'
@@ -50,6 +60,56 @@ Mustache.parse(app.search_tmpl)
 
 document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_tmpl, { db: Object.values(db) })
 
+const plot = (target, range) => {
+  socket.emit('plot', app.result_table_status.collection, app.result_table_status.datasets, target, range, (err, start_position, range, data) => {
+    if (err) return console.error(err)
+
+    const g_height = app.plot_opt.height - app.plot_opt.margin.top - app.plot_opt.margin.bottom,
+          g_width  = app.plot_opt.width  - app.plot_opt.margin.right - app.plot_opt.margin.left
+
+    const scaleX = d3ScaleLinear().domain([start_position, start_position + range]).range([0, g_width]),
+
+    /********** TRACK **********/
+
+    document.querySelector('#plot-track').innerHTML = ''
+
+    for (let dataset of app.result_table_status.datasets) {
+      const scaleY = d3ScaleLinear().domain([0, Math.max(10, d3Max(Object.values(data.track[dataset]), it => d3Max(it)))]).range([g_height, 0]),
+            line = d3Line().x((d, i) => scaleX(start_position + i)).y(d => scaleY(d))
+
+      const svg = d3Select('#plot-track').append('svg').datum(dataset).style('height', app.plot_opt.height).style('width', app.plot_opt.width)
+
+      const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
+
+      g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
+      g.append('g').call(d3AxisLeft(scaleY))
+        .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', 6)
+          .attr('dy', '0.71em')
+          .attr('fill', '#000')
+          .text('Value')
+
+      const experiment = g.selectAll('.experiment').data(dataset => Object.keys(data.track[dataset]).map(it => { return { experiment: it, values: data.track[dataset][it] } })).enter()
+                          .append('g').attr('class', 'experiment')
+
+      experiment.append('path')
+        .attr('fill', 'none')
+        .attr('stroke', it => 'p53' === it.experiment ? 'steelblue' : 'green')
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-width', 1.5)
+        .attr('d', it => line(it.values))
+    }
+
+    document.querySelector('#plot').style.display = 'block'
+    window.scroll({
+      behavior: 'smooth',
+      top: app.scroll_top.search + document.querySelector('#search').clientHeight + document.querySelector('#result').clientHeight
+    })
+  })
+}
+
 const renderTbody = () => {
   let gene_list, table = app.result_table_status
 
@@ -67,6 +127,8 @@ const renderTbody = () => {
     return it
 
   }) })
+
+  Array.from(document.querySelectorAll('#result tbody a[data-plot]'), dom => dom.onclick = () => plot(dom.dataset.plot, dom.dataset.range))
 }
 
 const renderTfoot = () => {
@@ -161,7 +223,7 @@ Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => do
 
 document.querySelector('#search button').onclick = () => {
   let browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
-      collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen,
+      collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen.toLowerCase(),
       custom_range = document.querySelector("#browse .column[data-browse='customized'] input[type='number']").value,
       custom_target = document.querySelector("#browse .column[data-browse='customized'] input[type='text']").value,
       datasets_chosen = document.querySelectorAll('#search tbody .checkbox input:checked')
@@ -174,7 +236,7 @@ document.querySelector('#search button').onclick = () => {
 
   Array.from(datasets_chosen, dom => datasets.push(dom.dataset.dataset))
 
-  socket.emit('search', browse, collection.toLowerCase(), 'union', datasets, (err, gene_list) => {
+  socket.emit('search', browse, collection, 'union', datasets, (err, gene_list) => {
     Array.from(datasets_chosen, dom => {
       dom.checked = false
       dom.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
@@ -182,6 +244,7 @@ document.querySelector('#search button').onclick = () => {
 
     if (err) return console.error(err)
 
+    app.result_table_status.collection = collection
     app.result_table_status.datasets = datasets.slice()
     app.result_table_status.gene_list = gene_list.slice()
 
@@ -202,6 +265,7 @@ document.querySelector('#search button').onclick = () => {
         occurrence    : app.result_table_status.datasets.length
       }] })
       document.querySelector('#result tbody a').removeAttribute('href')
+      document.querySelector('#result tbody a[data-plot]').onclick = function () { plot(this.dataset.plot, this.dataset.range) }
 
       app.result_table_status.curr_page_number = 1
       app.result_table_status.last_page = 1
