@@ -31,6 +31,10 @@ if ('development' === process.env.NODE_ENV)
 // global setting
 
 const app = {
+  colors: {
+    red  : 'rgb(219, 54, 41)',
+    teal : 'rgb(57, 181, 173)'
+  },
   global_browsing_range: document.querySelector("#browse .column[data-browse='global'] input[type='number']").value,
   plot_info_tmpl: document.querySelector('#plot-info script').innerHTML,
   plot_opt: {
@@ -65,6 +69,9 @@ document.querySelector('#search tbody').innerHTML = Mustache.render(app.search_t
 const plot = (target, range) => {
   socket.emit('plot', app.result_table_status.collection, app.result_table_status.datasets, target, range, (err, start_position, range, data) => {
     if (err) return console.error(err)
+
+    document.querySelector('#plot .menu a[data-page="plot-info"]').click()
+    document.querySelector('#plot .menu a[data-page="plot-track"]').classList.add('disabled')
 
     /********** INFORMATION **********/
 
@@ -128,8 +135,8 @@ const plot = (target, range) => {
 
     for (let category in peaks)
       g.append('g').append('path')
-        .attr('fill', () => 'clc' === category ? 'teal' : 'red')
-        .attr('stroke', () => 'clc' === category ? 'teal' : 'red')
+        .attr('fill', app.colors['clc' === category ? 'teal' : 'red'])
+        .attr('stroke', app.colors['clc' === category ? 'teal' : 'red'])
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
         .attr('stroke-width', 1.5)
@@ -158,6 +165,8 @@ const plot = (target, range) => {
     document.querySelector('#plot-track').innerHTML = ''
 
     if (Object.keys(data.track).length) {
+      document.querySelector('#plot .menu a[data-page="plot-track"]').classList.remove('disabled')
+
       for (let dataset of app.result_table_status.datasets) {
         const scaleY = d3ScaleLinear().domain([0, Math.max(10, d3Max(Object.values(data.track[dataset]), it => d3Max(it)))]).range([g_height, 0]),
               line = d3Line().x((d, i) => scaleX(start_position + i)).y(d => scaleY(d))
@@ -412,6 +421,9 @@ document.querySelector('#search button').onclick = () => {
 /************************************** PLOT **************************************/
 
 Array.from(document.querySelectorAll('#plot .menu a[data-page]'), dom => dom.onclick = function () {
+  if (this.classList.contains('disabled'))
+    return
+
   document.querySelector('#plot').dataset.show = this.dataset.page
   document.querySelector('#plot .menu a[data-page].active').classList.remove('active')
 
