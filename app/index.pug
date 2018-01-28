@@ -135,15 +135,15 @@ html
                         | {{/last_page}}
                         a.icon.item(data-page-plus) #[i.right.chevron.icon]
 
-    #plot.ui.vertical.segment(data-show='plot-track')
+    #plot.ui.vertical.segment(data-show='plot-info')
       .ui.middle.aligned.stackable.grid.container
         .row
           .left.aligned.column
             span.ui.huge.header #[i.angle.double.right.icon] Plot
             .ui.pointing.menu
-              a.item.active Information
-              a.item Peak Calling
-              a.item Track View
+              a(data-page='plot-info').item.active Information
+              a(data-page='plot-peak').item Peak Calling
+              a(data-page='plot-track').item Track View
             #plot-info.ui.segment
               script(type='x-tmpl-mustache')
                 table.ui.black.table.selectable

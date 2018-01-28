@@ -404,3 +404,12 @@ document.querySelector('#search button').onclick = () => {
     window.scroll({ behavior: 'smooth', top: app.scroll_top.search + document.querySelector('#search').clientHeight })
   })
 }
+
+/************************************** PLOT **************************************/
+
+Array.from(document.querySelectorAll('#plot .menu a[data-page]'), dom => dom.onclick = function () {
+  document.querySelector('#plot').dataset.show = this.dataset.page
+  document.querySelector('#plot .menu a[data-page].active').classList.remove('active')
+
+  this.classList.add('active')
+})
