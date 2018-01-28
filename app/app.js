@@ -32,6 +32,7 @@ if ('development' === process.env.NODE_ENV)
 
 const app = {
   colors: {
+    grey : 'rgb(117, 117, 117)',
     red  : 'rgb(219, 54, 41)',
     teal : 'rgb(57, 181, 173)'
   },
@@ -195,6 +196,35 @@ const plot = (target, range) => {
           .attr('stroke-width', 1.5)
           .attr('d', it => line(it.values))
       }
+    }
+
+    /********** GENE **********/
+
+    for (let gene of data.gene) {
+      gene = {
+        end       : scaleX(Math.min(start_position + range, gene.transcript_end)),
+        gene_name : gene.gene_name,
+        start     : scaleX(Math.max(start_position, gene.transcript_start)),
+        strand    : '1' === gene.strand ? '+' : '-'
+      }
+
+      const bar = d3Select('#plot').selectAll('svg')
+                    .append('g')
+                      .attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.height - app.plot_opt.margin.bottom / 2})`)
+
+      bar.append('rect')
+        .attr('width', gene.end - gene.start)
+        .attr('height', app.plot_opt.margin.bottom * 2 / 5)
+        .attr('transform', `translate(${gene.start},0)`)
+        .attr('fill', app.colors.grey)
+
+      bar.append('text')
+        .attr('x', gene.start)
+        .attr('y', app.plot_opt.margin.bottom / 5)
+        .attr('dy', app.plot_opt.margin.bottom / 10)
+        .attr('fill', '#fff')
+        .style('font-style', 'italic')
+        .text(`${gene.gene_name} (${gene.strand})`)
     }
 
     document.querySelector('#plot').style.display = 'block'
