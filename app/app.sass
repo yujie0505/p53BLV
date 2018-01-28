@@ -77,13 +77,16 @@ $teal: #00b5ad
   display: none
   padding: 3em 0
 
+  &[data-show=plot-info] #plot-info
+    display: block
+
   &[data-show=plot-peak] #plot-peak
     display: block
 
   &[data-show=plot-track] #plot-track
     display: block
 
-  #plot-peak, #plot-track
+  #plot-info, #plot-peak, #plot-track
     display: none
 
   .header

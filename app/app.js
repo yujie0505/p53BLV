@@ -87,7 +87,7 @@ const plot = (target, range) => {
 
       for (let dataset of app.result_table_status.datasets) {
         let peaks_in_dataset = peaks[category][dataset]
-          ? { dataset: dataset, peak_amount: peaks[category][dataset].length, peaks: peaks[category][dataset] }
+          ? { dataset: dataset, peak_amount: peaks[category][dataset].length, peaks: peaks[category][dataset].slice() }
           : { dataset: dataset, peak_amount: 1, peaks: [{ location: 'No Peak' }] }
         peaks_in_dataset.first_peak_in_dataset = peaks_in_dataset.peaks.shift()
 
@@ -105,6 +105,49 @@ const plot = (target, range) => {
     const scaleX = d3ScaleLinear().domain([start_position, start_position + range]).range([0, g_width])
 
     /********** PEAK **********/
+
+    document.querySelector('#plot-peak').innerHTML = ''
+
+    const y_max = d3Max(Object.values(peaks), datasets => d3Max(Object.values(datasets), peaks => d3Max(peaks, it => it.score || it.localScore))),
+          scaleY = d3ScaleLinear().domain([0, Math.max(10, y_max)]).range([g_height, 0]),
+          line = d3Line().x(d => scaleX(d.x)).y(d => scaleY(d.y))
+
+    const svg = d3Select('#plot-peak').selectAll('svg').data(app.result_table_status.datasets).enter()
+                  .append('svg').style('height', app.plot_opt.height).style('width', app.plot_opt.width)
+
+    const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
+
+    g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
+    g.append('g').call(d3AxisLeft(scaleY))
+      .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '0.71em')
+        .attr('fill', '#000')
+        .text('Value')
+
+    for (let category of Object.keys(peaks))
+      g.append('g').append('path')
+        .attr('fill', () => 'clc' === category ? 'teal' : 'red')
+        .attr('stroke', () => 'clc' === category ? 'teal' : 'red')
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-width', 1.5)
+        .attr('d', it => {
+          let data = []
+
+          for (let peak of peaks[category][it]) {
+            let x_max = Math.min(start_position + range, peak.peak_end),
+                x_min = Math.max(start_position, peak.peak_start)
+
+            data.push({ x: x_min, y: 0 })
+            data.push({ x: x_min, y: peak.score || peak.localScore })
+            data.push({ x: x_max, y: peak.score || peak.localScore })
+            data.push({ x: x_max, y: 0 })
+          }
+
+          return line(data)
+        })
 
     /********** TRACK **********/
 
