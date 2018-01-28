@@ -67,7 +67,7 @@ const plot = (target, range) => {
     const g_height = app.plot_opt.height - app.plot_opt.margin.top - app.plot_opt.margin.bottom,
           g_width  = app.plot_opt.width  - app.plot_opt.margin.right - app.plot_opt.margin.left
 
-    const scaleX = d3ScaleLinear().domain([start_position, start_position + range]).range([0, g_width]),
+    const scaleX = d3ScaleLinear().domain([start_position, start_position + range]).range([0, g_width])
 
     /********** TRACK **********/
 

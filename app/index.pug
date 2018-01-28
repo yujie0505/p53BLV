@@ -140,7 +140,12 @@ html
         .row
           .left.aligned.column
             span.ui.huge.header #[i.angle.double.right.icon] Plot
-            #plot-peak
-            #plot-track
+            .ui.pointing.menu
+              a.item.active Information
+              a.item Peak Calling
+              a.item Track View
+            #plot-info.ui.segment
+            #plot-peak.ui.segment
+            #plot-track.ui.segment
 
     script(src='./app.js')
