@@ -126,24 +126,28 @@ const plot = (target, range) => {
         .attr('fill', '#000')
         .text('Value')
 
-    for (let category of Object.keys(peaks))
+    for (let category in peaks)
       g.append('g').append('path')
         .attr('fill', () => 'clc' === category ? 'teal' : 'red')
         .attr('stroke', () => 'clc' === category ? 'teal' : 'red')
         .attr('stroke-linejoin', 'round')
         .attr('stroke-linecap', 'round')
         .attr('stroke-width', 1.5)
-        .attr('d', it => {
+        .attr('d', dataset => {
           let data = []
 
-          for (let peak of peaks[category][it]) {
-            let x_max = Math.min(start_position + range, peak.peak_end),
-                x_min = Math.max(start_position, peak.peak_start)
+          if (!peaks[category][dataset])
+            return
 
-            data.push({ x: x_min, y: 0 })
-            data.push({ x: x_min, y: peak.score || peak.localScore })
-            data.push({ x: x_max, y: peak.score || peak.localScore })
-            data.push({ x: x_max, y: 0 })
+          for (let peak of peaks[category][dataset]) {
+            let peak_end   = Math.min(start_position + range, peak.peak_end),
+                peak_start = Math.max(start_position, peak.peak_start),
+                value      = peak.score || peak.localScore
+
+            data.push({ x: peak_start, y: 0 })
+            data.push({ x: peak_start, y: value })
+            data.push({ x: peak_end  , y: value })
+            data.push({ x: peak_end  , y: 0 })
           }
 
           return line(data)
@@ -153,7 +157,7 @@ const plot = (target, range) => {
 
     document.querySelector('#plot-track').innerHTML = ''
 
-    if ('homer' === app.result_table_status.collection) {
+    if (Object.keys(data.track).length) {
       for (let dataset of app.result_table_status.datasets) {
         const scaleY = d3ScaleLinear().domain([0, Math.max(10, d3Max(Object.values(data.track[dataset]), it => d3Max(it)))]).range([g_height, 0]),
               line = d3Line().x((d, i) => scaleX(start_position + i)).y(d => scaleY(d))
@@ -342,7 +346,7 @@ document.querySelector('#search button').onclick = () => {
     if ('customized' === browse) {
       document.querySelector('#result tbody').innerHTML = Mustache.render(app.result_tbody_tmpl, { gene_list: [{
         custom_range  : custom_range,
-        datasets      : app.result_table_status.datasets.map(() => '<i class="large green checkmark icon"></i>'),
+        datasets      : app.result_table_status.datasets.map(() => '<div data-tooltip="click `Link` for advanced search" data-position="bottom center"><i class="large grey warning sign icon"></i></div>'),
         gene_name     : custom_target,
         occurrence    : app.result_table_status.datasets.length
       }] })
