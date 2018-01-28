@@ -1,3 +1,5 @@
+'use strict'
+
 import mongo from './lib/mongo.js'
 import track from './lib/track.js'
 
@@ -8,7 +10,7 @@ const chr_whitelist = new RegExp(`^chr(${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
 module.exports = io => {
   io.on('connect', client => {
     client.on('plot', async (collection, datasets, target, range, cb) => {
-      const plot_data = { peak: {}, track: {} }
+      const plot_data = { gene: [], peak: [], track: {} }
 
       let chromosome, gene, start_position
 
@@ -37,6 +39,35 @@ module.exports = io => {
 
       range = parseInt(range)
       start_position = Math.max(1, start_position - parseInt(range / 2))
+
+      try {
+        let [err, result] = await mongo.read('gene', {
+          chr_name: chromosome.replace(/^chr/, ''),
+          transcript_start: { $lte: start_position + range },
+          transcript_end: { $gte: start_position }
+        }, {}, { _id: 0 })
+
+        if (err)
+          throw err
+
+        plot_data.gene = result.data
+
+      } catch (err) { return cb(err) }
+
+      try {
+        let [err, result] = await mongo.read('peak', {
+          $or: datasets.map(it => { return { dataset: it } }),
+          chr_name: chromosome.replace(/^chr/, ''),
+          peak_start: { $lte: start_position + range },
+          peak_end: { $gte: start_position }
+        }, {}, { _id: 0 })
+
+        if (err)
+          throw err
+
+        plot_data.peak = result.data
+
+      } catch (err) { return cb(err) }
 
       if ('homer' !== collection)
         return cb(null, start_position, range, plot_data)

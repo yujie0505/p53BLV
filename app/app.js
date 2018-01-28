@@ -32,6 +32,7 @@ if ('development' === process.env.NODE_ENV)
 
 const app = {
   global_browsing_range: document.querySelector("#browse .column[data-browse='global'] input[type='number']").value,
+  plot_info_tmpl: document.querySelector('#plot-info script').innerHTML,
   plot_opt: {
     height : 500,
     margin : { top: 40, right: 40, bottom: 40, left: 40 },
@@ -53,6 +54,7 @@ const app = {
   wildtype_datasets: /^D(1|2|3|4|5|6|7|8|9)$/
 }
 app.scroll_top.search = app.scroll_top.browse + document.querySelector('#browse').clientHeight
+Mustache.parse(app.plot_info_tmpl)
 Mustache.parse(app.result_tbody_tmpl)
 Mustache.parse(app.result_tfoot_tmpl)
 Mustache.parse(app.result_thead_tmpl)
@@ -64,42 +66,79 @@ const plot = (target, range) => {
   socket.emit('plot', app.result_table_status.collection, app.result_table_status.datasets, target, range, (err, start_position, range, data) => {
     if (err) return console.error(err)
 
+    /********** INFORMATION **********/
+
+    const info = { gene_list: data.gene }, peaks = { clc: {}, homer: {} }
+
+    for (let peak of data.peak) {
+      if (!peaks[peak.collection][peak.dataset])
+        peaks[peak.collection][peak.dataset] = []
+
+      peak.location = `chr${peak.chr_name}:${peak.peak_start} - ${peak.peak_end}`
+
+      peaks[peak.collection][peak.dataset].push(peak)
+    }
+
+    if      ('clc'   === app.result_table_status.collection) delete peaks.homer
+    else if ('homer' === app.result_table_status.collection) delete peaks.clc
+
+    for (let category in peaks) {
+      info[category] = { datasets: [] }
+
+      for (let dataset of app.result_table_status.datasets) {
+        let peaks_in_dataset = peaks[category][dataset]
+          ? { dataset: dataset, peak_amount: peaks[category][dataset].length, peaks: peaks[category][dataset] }
+          : { dataset: dataset, peak_amount: 1, peaks: [{ location: 'No Peak' }] }
+        peaks_in_dataset.first_peak_in_dataset = peaks_in_dataset.peaks.shift()
+
+        info[category].datasets.push(peaks_in_dataset)
+      }
+    }
+
+    document.querySelector('#plot-info').innerHTML = Mustache.render(app.plot_info_tmpl, info)
+
+    /********** PLOTTING **********/
+
     const g_height = app.plot_opt.height - app.plot_opt.margin.top - app.plot_opt.margin.bottom,
           g_width  = app.plot_opt.width  - app.plot_opt.margin.right - app.plot_opt.margin.left
 
     const scaleX = d3ScaleLinear().domain([start_position, start_position + range]).range([0, g_width])
 
+    /********** PEAK **********/
+
     /********** TRACK **********/
 
     document.querySelector('#plot-track').innerHTML = ''
 
-    for (let dataset of app.result_table_status.datasets) {
-      const scaleY = d3ScaleLinear().domain([0, Math.max(10, d3Max(Object.values(data.track[dataset]), it => d3Max(it)))]).range([g_height, 0]),
-            line = d3Line().x((d, i) => scaleX(start_position + i)).y(d => scaleY(d))
+    if ('homer' === app.result_table_status.collection) {
+      for (let dataset of app.result_table_status.datasets) {
+        const scaleY = d3ScaleLinear().domain([0, Math.max(10, d3Max(Object.values(data.track[dataset]), it => d3Max(it)))]).range([g_height, 0]),
+              line = d3Line().x((d, i) => scaleX(start_position + i)).y(d => scaleY(d))
 
-      const svg = d3Select('#plot-track').append('svg').datum(dataset).style('height', app.plot_opt.height).style('width', app.plot_opt.width)
+        const svg = d3Select('#plot-track').append('svg').datum(dataset).style('height', app.plot_opt.height).style('width', app.plot_opt.width)
 
-      const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
+        const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
 
-      g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
-      g.append('g').call(d3AxisLeft(scaleY))
-        .append('text')
-          .attr('transform', 'rotate(-90)')
-          .attr('y', 6)
-          .attr('dy', '0.71em')
-          .attr('fill', '#000')
-          .text('Value')
+        g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
+        g.append('g').call(d3AxisLeft(scaleY))
+          .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 6)
+            .attr('dy', '0.71em')
+            .attr('fill', '#000')
+            .text('Value')
 
-      const experiment = g.selectAll('.experiment').data(dataset => Object.keys(data.track[dataset]).map(it => { return { experiment: it, values: data.track[dataset][it] } })).enter()
-                          .append('g').attr('class', 'experiment')
+        const experiment = g.selectAll('.experiment').data(dataset => Object.keys(data.track[dataset]).map(it => { return { experiment: it, values: data.track[dataset][it] } })).enter()
+                            .append('g').attr('class', 'experiment')
 
-      experiment.append('path')
-        .attr('fill', 'none')
-        .attr('stroke', it => 'p53' === it.experiment ? 'steelblue' : 'green')
-        .attr('stroke-linejoin', 'round')
-        .attr('stroke-linecap', 'round')
-        .attr('stroke-width', 1.5)
-        .attr('d', it => line(it.values))
+        experiment.append('path')
+          .attr('fill', 'none')
+          .attr('stroke', it => 'p53' === it.experiment ? 'steelblue' : 'green')
+          .attr('stroke-linejoin', 'round')
+          .attr('stroke-linecap', 'round')
+          .attr('stroke-width', 1.5)
+          .attr('d', it => line(it.values))
+      }
     }
 
     document.querySelector('#plot').style.display = 'block'

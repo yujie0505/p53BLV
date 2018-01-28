@@ -145,6 +145,76 @@ html
               a.item Peak Calling
               a.item Track View
             #plot-info.ui.segment
+              script(type='x-tmpl-mustache')
+                table.ui.black.table.selectable
+                  thead
+                    tr
+                      th Gene Symbol
+                      th Description
+                      th Synonyms
+                  tbody
+                    | {{#gene_list}}
+                    tr
+                      td {{gene_name}}
+                      td {{description}}
+                      td {{synonyms}}
+                    | {{/gene_list}}
+                | {{#homer}}
+                table.ui.red.table
+                  thead
+                    tr
+                      th HOMER Dataset
+                      th Peak Location
+                      th Fold Change
+                      th p-Value
+                      th Local Fold Change
+                      th Local p-Value
+                  tbody
+                    | {{#datasets}}
+                    tr
+                      td(rowspan='{{peak_amount}}') {{dataset}}
+                      | {{#first_peak_in_dataset}}
+                      td {{location}}
+                      td {{score}}
+                      td {{pValue}}
+                      td {{localScore}}
+                      td {{localPValue}}
+                      | {{/first_peak_in_dataset}}
+                    | {{#peaks}}
+                    tr
+                      td {{location}}
+                      td {{score}}
+                      td {{pValue}}
+                      td {{localScore}}
+                      td {{localPValue}}
+                    | {{/peaks}}
+                    | {{/datasets}}
+                | {{/homer}}
+                | {{#clc}}
+                table.ui.teal.table
+                  thead
+                    tr
+                      th CLC Dataset
+                      th Peak Location
+                      th Score
+                      th p-Value
+                  tbody
+                    | {{#datasets}}
+                    tr
+                      td(rowspan='{{peak_amount}}') {{dataset}}
+                      | {{#first_peak_in_dataset}}
+                      td {{location}}
+                      td {{score}}
+                      td {{pValue}}
+                      | {{/first_peak_in_dataset}}
+                    | {{#peaks}}
+                    tr
+                      td {{location}}
+                      td {{score}}
+                      td {{pValue}}
+                    | {{/peaks}}
+                    | {{/datasets}}
+                | {{/clc}}
             #plot-peak.ui.segment
             #plot-track.ui.segment
 
