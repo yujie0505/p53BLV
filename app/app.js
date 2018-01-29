@@ -39,10 +39,12 @@ const app = {
   global_browsing_range: document.querySelector("#browse .column[data-browse='global'] input[type='number']").value,
   plot_info_tmpl: document.querySelector('#plot-info script').innerHTML,
   plot_opt: {
-    height : 500,
-    margin : { top: 40, right: 40, bottom: 40, left: 40 },
-    width  : document.querySelector('.container').clientWidth
+    font_size : parseInt(window.getComputedStyle(document.querySelector('html')).getPropertyValue('font-size')),
+    height    : 500,
+    margin    : { top: 50, right: 40, bottom: 50, left: 40 },
+    width     : document.querySelector('.left.column').clientWidth
   },
+  promoter_offset: 10000,
   redirection_list: {
     FAM95C : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000283486;r=9:38540569-38577207',
     OR8S1  : 'http://asia.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=ENSG00000284723;r=12:48525632-48528103'
@@ -58,6 +60,7 @@ const app = {
   search_tmpl: document.querySelector('#search script').innerHTML,
   wildtype_datasets: /^D(1|2|3|4|5|6|7|8|9)$/
 }
+app.plot_opt.width -= 4 * app.plot_opt.font_size
 app.scroll_top.search = app.scroll_top.browse + document.querySelector('#browse').clientHeight
 Mustache.parse(app.plot_info_tmpl)
 Mustache.parse(app.result_tbody_tmpl)
@@ -125,6 +128,15 @@ const plot = (target, range) => {
 
     const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
 
+    g.append('g').append('text')
+      .attr('x', g_width / 2)
+      .attr('dy', - app.plot_opt.margin.top / 2)
+      .attr('text-anchor', 'middle')
+      .style('font-size', app.plot_opt.font_size * 1.3)
+      .style('font-style', 'italic')
+      .style('text-decoration', 'underline')
+      .text(dataset => `${dataset}: ${db[dataset].cellLine}, ${db[dataset].tp53}, ${db[dataset].treatment}`)
+
     g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
     g.append('g').call(d3AxisLeft(scaleY))
       .append('text')
@@ -176,6 +188,15 @@ const plot = (target, range) => {
 
         const g = svg.append('g').attr('transform', `translate(${app.plot_opt.margin.left},${app.plot_opt.margin.top})`)
 
+        g.append('g').append('text')
+          .attr('x', g_width / 2)
+          .attr('dy', - app.plot_opt.margin.top / 2)
+          .attr('text-anchor', 'middle')
+          .style('font-size', app.plot_opt.font_size * 1.3)
+          .style('font-style', 'italic')
+          .style('text-decoration', 'underline')
+          .text(dataset => `${dataset}: ${db[dataset].cellLine}, ${db[dataset].tp53}, ${db[dataset].treatment}`)
+
         g.append('g').attr('transform', `translate(0,${g_height})`).call(d3AxisBottom(scaleX))
         g.append('g').call(d3AxisLeft(scaleY))
           .append('text')
@@ -225,6 +246,28 @@ const plot = (target, range) => {
         .attr('fill', '#fff')
         .style('font-style', 'italic')
         .text(`${gene.gene_name} (${gene.strand})`)
+    }
+
+    /********** PROMOTER **********/
+
+    if ('global' === app.result_table_status.browse) {
+      const chart = d3Select('#plot').selectAll('svg')
+
+      chart.append('g').attr('transform', `translate(${app.plot_opt.margin.left + scaleX(start_position + app.promoter_offset / 2)},${app.plot_opt.margin.top})`)
+        .append('path')
+          .attr('fill', 'none')
+          .attr('stroke', '#000')
+          .attr('stroke-width', 1.5)
+          .style('stroke-dasharray', 2)
+          .attr('d', `M0,0L0,${g_height + app.plot_opt.margin.bottom}`)
+
+      chart.append('g').attr('transform', `translate(${app.plot_opt.margin.left + scaleX(start_position + range - app.promoter_offset / 2)},${app.plot_opt.margin.top})`)
+        .append('path')
+          .attr('fill', 'none')
+          .attr('stroke', '#000')
+          .attr('stroke-width', 1.5)
+          .style('stroke-dasharray', 2)
+          .attr('d', `M0,0L0,${g_height + app.plot_opt.margin.bottom}`)
     }
 
     document.querySelector('#plot').style.display = 'block'
@@ -369,9 +412,12 @@ document.querySelector('#search button').onclick = () => {
 
     if (err) return console.error(err)
 
+    app.result_table_status.browse = browse
     app.result_table_status.collection = collection
     app.result_table_status.datasets = datasets.slice()
     app.result_table_status.gene_list = gene_list.slice()
+
+    document.querySelector('#plot').style.display = 'none'
 
     /********** THEAD **********/
 
