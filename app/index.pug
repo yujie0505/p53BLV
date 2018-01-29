@@ -80,6 +80,18 @@ html
                 tr
                   th
                   th(colspan='7')
+                    .ui.toggle.checkbox
+                      input(data-action='union' type='checkbox')
+                      label A &#x022C3; B
+                    .ui.toggle.checkbox
+                      input(data-action='intersection' type='checkbox')
+                      label A &#x022C2; B
+                    .ui.toggle.checkbox.complement.disabled
+                      input(data-action='pre-complement' type='checkbox')
+                      label A - B
+                    .ui.toggle.checkbox.complement.disabled
+                      input(data-action='post-complement' type='checkbox')
+                      label B - A
                     .ui.right.floated.small.primary.labeled.icon.button #[i.search.icon] Search
 
     #result.ui.vertical.segment.inverted.teal

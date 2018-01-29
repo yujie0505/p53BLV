@@ -387,16 +387,32 @@ Array.from(document.querySelectorAll('#search thead .dropdown .menu .item'), dom
 
 Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => dom.onclick = function () {
   this.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
+
+  if (2 === document.querySelectorAll('#search tbody .checkbox input:checked').length)
+    Array.from(document.querySelectorAll('#search tfoot .toggle.checkbox.complement'), it => it.classList.remove('disabled'))
+  else {
+    Array.from(document.querySelectorAll('#search tfoot .toggle.checkbox.complement'), it => {
+      it.classList.add('disabled')
+      it.querySelector('input').checked = false
+    })
+  }
+})
+
+Array.from(document.querySelectorAll('#search tfoot .toggle.checkbox input'), dom => dom.onclick = function () {
+  Array.from(document.querySelectorAll('#search tfoot .toggle.checkbox input:checked'), it => it.checked = false)
+
+  this.checked = true
 })
 
 document.querySelector('#search tfoot .right.button').onclick = function () {
-  let browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
+  let action_chosen = document.querySelector('#search tfoot .toggle.checkbox input:checked'),
+      browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
       collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen.toLowerCase(),
       custom_range = document.querySelector("#browse .column[data-browse='customized'] input[type='number']").value,
       custom_target = document.querySelector("#browse .column[data-browse='customized'] input[type='text']").value,
       datasets_chosen = document.querySelectorAll('#search tbody .checkbox input:checked')
 
-  if (!datasets_chosen.length) return
+  if (!action_chosen || !datasets_chosen.length) return
 
   if ('customized' === browse && (!custom_range.length || !custom_target.length)) return
 
@@ -406,11 +422,16 @@ document.querySelector('#search tfoot .right.button').onclick = function () {
 
   this.classList.add('loading')
 
-  socket.emit('search', browse, collection, 'union', datasets, (err, gene_list) => {
+  socket.emit('search', browse, collection, action_chosen.dataset.action, datasets, (err, gene_list) => {
+    action_chosen.checked = false
+
     Array.from(datasets_chosen, dom => {
       dom.checked = false
       dom.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
     })
+
+    Array.from(document.querySelectorAll('#search tfoot .toggle.checkbox.complement'), it => it.classList.add('disabled'))
+
     this.classList.remove('loading')
 
     if (err) return console.error(err)
