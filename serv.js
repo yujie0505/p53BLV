@@ -91,15 +91,20 @@ module.exports = io => {
       if ('customized' === browse)
         return cb(null, [])
 
-      let project = { _id: 0, gene_name: 1 }, query = []
+      let project = { _id: 0, gene_name: 1 }, query
 
-      for (let dataset of datasets) {
+      for (let dataset of datasets)
         project[dataset] = 1
-        query.push({ [dataset]: true })
-      }
+
+      if ('pre-complement' === action)
+        query = { [datasets[0]]: true, [datasets[1]]: undefined }
+      else if ('post-complement' === action)
+        query = { [datasets[0]]: undefined, [datasets[1]]: true }
+      else
+        query = { ['union' === action ? '$or' : '$and']: datasets.map(dataset => { return { [dataset]: true } }) }
 
       try {
-        let [err, result] = await mongo.read(collection, { ['union' === action ? '$or' : '$and']: query }, {}, project)
+        let [err, result] = await mongo.read(collection, query, {}, project)
 
         if (err)
           throw err
