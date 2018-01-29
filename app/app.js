@@ -389,7 +389,7 @@ Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => do
   this.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
 })
 
-document.querySelector('#search button').onclick = () => {
+document.querySelector('#search button').onclick = function () {
   let browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
       collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen.toLowerCase(),
       custom_range = document.querySelector("#browse .column[data-browse='customized'] input[type='number']").value,
@@ -404,11 +404,14 @@ document.querySelector('#search button').onclick = () => {
 
   Array.from(datasets_chosen, dom => datasets.push(dom.dataset.dataset))
 
+  this.classList.add('loading')
+
   socket.emit('search', browse, collection, 'union', datasets, (err, gene_list) => {
     Array.from(datasets_chosen, dom => {
       dom.checked = false
       dom.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
     })
+    this.classList.remove('loading')
 
     if (err) return console.error(err)
 
