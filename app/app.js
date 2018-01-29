@@ -389,7 +389,7 @@ Array.from(document.querySelectorAll('#search tbody .checkbox input'), dom => do
   this.parentNode.parentNode.parentNode.querySelector('td.list').classList.toggle('disabled')
 })
 
-document.querySelector('#search button').onclick = function () {
+document.querySelector('#search tfoot .right.button').onclick = function () {
   let browse = document.querySelector('#browse .column[data-browse].chosen').dataset.browse,
       collection = document.querySelector('#search thead .dropdown .menu').dataset.listChosen.toLowerCase(),
       custom_range = document.querySelector("#browse .column[data-browse='customized'] input[type='number']").value,

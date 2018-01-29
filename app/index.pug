@@ -76,10 +76,11 @@ html
                     td #[a(href='{{reference.href}}') {{reference.title}}]
                     td #[a(href='{{GEO.href}}') {{GEO.title}}]
                   | {{/db}}
-
-        .row
-          .center.aligned.column
-            button.ui.primary.button Search
+              tfoot.full-width
+                tr
+                  th
+                  th(colspan='7')
+                    .ui.right.floated.small.primary.labeled.icon.button #[i.search.icon] Search
 
     #result.ui.vertical.segment.inverted.teal
       .ui.middle.aligned.stackable.grid.container
