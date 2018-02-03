@@ -11,3 +11,13 @@ or
 ```bash
 $ yarn install
 ```
+
+## Config
+
+```bash
+$ cp option.sample.json option.json
+
+# fill in all information in the configuration file
+
+$ vi option.json
+```
