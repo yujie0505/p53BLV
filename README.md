@@ -30,3 +30,7 @@ or
 ```bash
 $ yarn start
 ```
+
+## Usage
+
+![home](./snapshots/home.png)
