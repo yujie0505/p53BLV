@@ -1,7 +1,12 @@
 {
-  "name": "CSB",
-  "description": "Show results for Computational Systems Biology tools",
-  "repository": "https://github.com/yujie0505/CSB.git",
+  "name": "p53BLV",
+  "description": "Whole-Genome Binding Locations Viewer of Human p53",
+  "repository": "https://github.com/yujie0505/p53BLV.git",
+  "dependencies": {
+    "d3": "^4.12.2",
+    "mustache": "^2.3.0",
+    "semantic-ui-offline": "^2.2.1-3.4"
+  },
   "devDependencies": {
     "autoprefixer": "^7.1.4",
     "babel-core": "^6.26.0",
@@ -30,11 +35,5 @@
   },
   "scripts": {
     "start": "NODE_ENV=development ./node_modules/.bin/gulp dev"
-  },
-  "dependencies": {
-    "async": "^2.6.0",
-    "d3": "^4.12.2",
-    "mustache": "^2.3.0",
-    "semantic-ui-offline": "^2.2.1-3.4"
   }
 }
