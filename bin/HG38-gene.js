@@ -24,11 +24,10 @@ const opt = {
 
 // utility
 
-const crawler = url => {
-  return new Promise((resolve, reject) => {
+const crawler = url =>
+  new Promise((resolve, reject) => {
     request(url, (err, res, body) => err ? reject(err) : resolve(body))
   })
-}
 
 const getGeneInfo = async (gene_info, url, retry=0) => {
   let body, match
@@ -47,7 +46,7 @@ const getGeneInfo = async (gene_info, url, retry=0) => {
     return setTimeout(() => getGeneInfo(gene_info, url, ++retry), opt.crawler.retry_interval)
   }
 
-  gene_info.description = match[1].replace(/<.*?>/g, ''),
+  gene_info.description = match[1].replace(/<.*?>/g, '')
   gene_info.synonyms    = match[2] || ''
 }
 
