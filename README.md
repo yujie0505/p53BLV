@@ -31,7 +31,7 @@ $ npm start
 $ yarn start
 ```
 
-## Usage
+## Workflow
 
 1. Landing page
 
