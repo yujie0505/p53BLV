@@ -6,10 +6,10 @@
 
 ```bash
 $ npm i
-```
-or
-```bash
-$ yarn install
+
+# or
+
+$ yarn
 ```
 
 ## Config
@@ -25,9 +25,9 @@ $ vi option.json
 
 ```bash
 $ npm start
-```
-or
-```bash
+
+# or
+
 $ yarn start
 ```
 
