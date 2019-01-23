@@ -61,7 +61,7 @@ _Global browsing_
 
 ![result-global](./snapshots/result-global.png)
 
-5. Search etails and plotting
+5. Search details and plotting
 
 _Information_
 
