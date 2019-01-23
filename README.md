@@ -46,3 +46,17 @@ _Customized browsing_
 _Global browsing_
 
 ![browse-global](./snapshots/browse-global.png)
+
+3. Setting conditions for searching
+
+![search](./snapshots/search.png)
+
+4. Searching results
+
+_Customized browsing_
+
+![result-customized](./snapshots/result-customized.png)
+
+_Global browsing_
+
+![result-global](./snapshots/result-global.png)
