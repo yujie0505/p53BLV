@@ -47,11 +47,11 @@ _Global browsing_
 
 ![browse-global](./snapshots/browse-global.png)
 
-3. Set conditions for searching
+3. Set search conditions
 
 ![search](./snapshots/search.png)
 
-4. Show search results
+4. Search results
 
 _Customized browsing_
 
@@ -61,7 +61,7 @@ _Global browsing_
 
 ![result-global](./snapshots/result-global.png)
 
-5. Show details and plotting
+5. Details and plotting
 
 _Information_
 
