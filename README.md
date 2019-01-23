@@ -51,7 +51,7 @@ _Global browsing_
 
 ![search](./snapshots/search.png)
 
-4. Searching results
+4. Showing search results
 
 _Customized browsing_
 
