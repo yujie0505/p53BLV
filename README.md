@@ -60,3 +60,17 @@ _Customized browsing_
 _Global browsing_
 
 ![result-global](./snapshots/result-global.png)
+
+5. Showing details and plotting
+
+_Information_
+
+![plot-information](./snapshots/plot-information.png)
+
+_Peak calling_
+
+![plot-peak](./snapshots/plot-peak.png)
+
+_Track view_
+
+![plot-track](./snapshots/plot-track.png)
