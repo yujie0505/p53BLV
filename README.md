@@ -33,4 +33,16 @@ $ yarn start
 
 ## Usage
 
+1. Landing page
+
 ![home](./snapshots/home.png)
+
+2. Choosing the browsing mode
+
+_Customized browsing_
+
+![browse-customized](./snapshots/browse-customized.png)
+
+_Global browsing_
+
+![browse-global](./snapshots/browse-global.png)
