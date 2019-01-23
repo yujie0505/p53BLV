@@ -37,7 +37,7 @@ $ yarn start
 
 ![home](./snapshots/home.png)
 
-2. Choosing the browsing mode
+2. Choose the browsing mode
 
 _Customized browsing_
 
@@ -47,11 +47,11 @@ _Global browsing_
 
 ![browse-global](./snapshots/browse-global.png)
 
-3. Setting conditions for searching
+3. Set conditions for searching
 
 ![search](./snapshots/search.png)
 
-4. Showing search results
+4. Show search results
 
 _Customized browsing_
 
@@ -61,7 +61,7 @@ _Global browsing_
 
 ![result-global](./snapshots/result-global.png)
 
-5. Showing details and plotting
+5. Show details and plotting
 
 _Information_
 
